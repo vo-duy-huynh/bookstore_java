@@ -114,4 +114,5 @@ public class User implements UserDetails {
     public int hashCode() {
         return getClass().hashCode();
     }
+
 }
