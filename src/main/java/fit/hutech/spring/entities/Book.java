@@ -38,6 +38,17 @@ public class Book {
     @Column(name = "price")
     @Positive(message = "Price must be greater than 0")
     private Double price;
+    @Column(name = "quantity")
+    @Positive(message = "Quantity must be greater than 0")
+    private Integer quantity;
+    @Column(name = "description", length = 1000)
+    @Size(max = 1000, message = "Description must be less than 1000 characters")
+    private String description;
+    @Column(name = "is_sale")
+    private Boolean isSale;
+    @Column(name = "sale_percent")
+    @Positive(message = "Sale percent must be greater than 0")
+    private Integer salePercent;
     @OneToMany(mappedBy = "book")
     @ToString.Exclude
     private List<Cover> cover = new ArrayList<>();

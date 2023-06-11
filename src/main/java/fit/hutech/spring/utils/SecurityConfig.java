@@ -54,7 +54,7 @@ public class SecurityConfig{
                         .requestMatchers("/css/**", "/js/**","/assets/", "/", "/oauth/**", "/register", "/error", "/books/set-view-image/**", "/books/delete-image/**", "/assets/css/vendor")
                         .permitAll()
                         .requestMatchers("/books/edit/**", "/books/add", "/books/delete")
-                        .hasAnyAuthority("ADMIN")
+                        .hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers("/books", "/cart", "/cart/**")
                         .hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers("/api/**")

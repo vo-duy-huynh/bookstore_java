@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <th:block th:replace="~{layout::link-css}"></th:block>
-  <th:block th:replace="~{layout::custom-css}"></th:block>
+  <th:block th:replace="~{layout::assets-css}"></th:block>
   <title>Add Book</title>
 </head>
 <body>
 <th:block th:replace="~{layout::header}"></th:block>
+<th:block th:replace="~{layout::mobile-form}"></th:block>
 <div class="container">
   <h1>Add Book</h1>
   <form th:action="@{/books/add}" th:object="${book}" method="post" enctype="multipart/form-data">
@@ -27,6 +27,26 @@
       <label class="form-label" for="price">Price:</label><span class="text-danger">*</span>
       <input class="form-control" required type="text" th:field="*{price}" id="price" placeholder="Enter price">
       <span class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+    </div>
+    <div class="col-6 mb-3">
+      <label class="form-label" for="quantity">Quantity:</label><span class="text-danger">*</span>
+      <input class="form-control" required type="text" th:field="*{quantity}" id="quantity" placeholder="Enter quantity">
+      <span class="text-danger" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></span>
+    </div>
+    <div class="col-6 mb-3">
+      <label class="form-label" for="description">Description:</label>
+      <textarea class="form-control" th:field="*{description}" id="description" placeholder="Enter description"></textarea>
+      <span class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+    </div>
+    <div class="col-6 mb-3">
+      <label class="form-label" for="isSale">Is Sale:</label>
+      <input class="form-control" type="checkbox" th:field="*{isSale}" id="isSale" placeholder="Enter isSale">
+      <span class="text-danger" th:if="${#fields.hasErrors('isSale')}" th:errors="*{isSale}"></span>
+    </div>
+    <div class="col-6 mb-3">
+      <label class="form-label" for="salePercent">Sale Percent:</label>
+      <input class="form-control" type="text" th:field="*{salePercent}" id="salePercent" placeholder="Enter salePercent">
+      <span class="text-danger" th:if="${#fields.hasErrors('salePercent')}" th:errors="*{salePercent}"></span>
     </div>
     <div class="col-6 mb-3">
       <label class="form-label" for="category">Category:</label><span class="text-danger">*</span>
@@ -48,5 +68,7 @@
   <a th:href="@{/books}">Back to List</a>
 </div>
 <th:block th:replace="~{layout::footer}"></th:block>
+<th:block th:replace="~{layout::action-after-footer}"></th:block>
+<th:block th:replace="~{layout::script}"></th:block>
 </body>
 </html>
