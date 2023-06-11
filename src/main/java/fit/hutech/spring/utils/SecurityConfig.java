@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -50,7 +51,7 @@ public class SecurityConfig{
     public SecurityFilterChain securityFilterChain(@NotNull HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/", "/oauth/**", "/register", "/error", "/books/set-view-image/**", "/books/delete-image/**")
+                        .requestMatchers("/css/**", "/js/**","/assets/", "/", "/oauth/**", "/register", "/error", "/books/set-view-image/**", "/books/delete-image/**", "/assets/css/vendor")
                         .permitAll()
                         .requestMatchers("/books/edit/**", "/books/add", "/books/delete")
                         .hasAnyAuthority("ADMIN")
@@ -115,4 +116,5 @@ public class SecurityConfig{
                         .realmName("hutech")
                 ).build();
     }
+
 }
