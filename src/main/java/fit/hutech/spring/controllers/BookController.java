@@ -6,16 +6,16 @@ import fit.hutech.spring.entities.Cover;
 import fit.hutech.spring.entities.Invoice;
 import fit.hutech.spring.repositories.IInvoiceRepository;
 import fit.hutech.spring.repositories.IItemInvoiceRepository;
-import fit.hutech.spring.services.BookService;
-import fit.hutech.spring.services.CartService;
-import fit.hutech.spring.services.CategoryService;
-import fit.hutech.spring.services.UserService;
+import fit.hutech.spring.services.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,9 +26,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,6 +46,7 @@ public class BookController {
     private final UserService userService;
     private final IInvoiceRepository invoiceRepository;
     private final IItemInvoiceRepository itemInvoiceRepository;
+    private final FileUpload fileUpload;
     @GetMapping
     public String showAllBooks(@NotNull Model model,
                                @RequestParam(defaultValue = "0") Integer pageNo,
@@ -65,11 +68,10 @@ public class BookController {
     }
 
     @PostMapping("/add")
-    public String addBook(
-            @Valid @ModelAttribute("book") Book book,
-          @RequestParam("imgList") MultipartFile[] images,
-            @NotNull BindingResult bindingResult,
-            Model model)throws IOException {
+    public String addBook(@Valid @ModelAttribute("book") Book book,
+                           @RequestParam("imgList") MultipartFile[] images,
+                           @NotNull BindingResult bindingResult,
+                           @NotNull Model model) {
         if (bindingResult.hasErrors()) {
             var errors = bindingResult.getAllErrors()
                     .stream()
@@ -77,13 +79,13 @@ public class BookController {
                     .toArray(String[]::new);
             model.addAttribute("errors", errors);
             model.addAttribute("categories", categoryService.getAllCategories());
-            return "book/add";
+            return "book/edit";
         }
         bookService.addBook(book);
         for (MultipartFile image : images) {
             if (!image.isEmpty()) {
                 try {
-                    String imageUrl = saveImage(image);
+                    String imageUrl = fileUpload.uploadFile(image);
                     Cover bookImage = new Cover();
                     if (book.getCover().isEmpty()) {
                         bookImage.setIsThumbnail(true);
@@ -91,7 +93,7 @@ public class BookController {
                     else {
                         bookImage.setIsThumbnail(false);
                     }
-                    bookImage.setUrlImage("/images/" +imageUrl);
+                    bookImage.setUrlImage(imageUrl);
                     bookImage.setBook(book);
                     book.getCover().add(bookImage);
                     bookService.addCover(bookImage);
@@ -102,14 +104,6 @@ public class BookController {
             }
         }
         return "redirect:/books";
-    }
-
-    private String saveImage(MultipartFile image) throws IOException {
-        File saveFile = new ClassPathResource("static/images").getFile();
-        String fileName = UUID.randomUUID()+ "." + StringUtils.getFilenameExtension(image.getOriginalFilename());
-        Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + fileName);
-        Files.copy(image.getInputStream(), path);
-        return fileName;
     }
 
     @GetMapping("/edit/{id}")
@@ -123,6 +117,7 @@ public class BookController {
 
     @PostMapping("/edit")
     public String editBook(@Valid @ModelAttribute("book") Book book,
+                           @RequestParam("imgList") MultipartFile[] images,
                            @NotNull BindingResult bindingResult,
                            @NotNull Model model) {
         if (bindingResult.hasErrors()) {
@@ -135,6 +130,27 @@ public class BookController {
             return "book/edit";
         }
         bookService.updateBook(book);
+        for (MultipartFile image : images) {
+            if (!image.isEmpty()) {
+                try {
+                    String imageUrl = fileUpload.uploadFile(image);
+                    Cover bookImage = new Cover();
+                    if (book.getCover().isEmpty()) {
+                        bookImage.setIsThumbnail(true);
+                    }
+                    else {
+                        bookImage.setIsThumbnail(false);
+                    }
+                    bookImage.setUrlImage(imageUrl);
+                    bookImage.setBook(book);
+                    book.getCover().add(bookImage);
+                    bookService.addCover(bookImage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    // Handle image upload error
+                }
+            }
+        }
         return "redirect:/books";
     }
 
@@ -190,10 +206,11 @@ public class BookController {
                             @RequestParam double price,
                             @RequestParam String cover,
                             @RequestParam(defaultValue = "1") int quantity) {
+
         var cart = cartService.getCart(session);
         cart.addItems(new Item(id, cover, name, price, quantity));
         cartService.updateCart(session, cart);
-        return "redirect:/books";
+        return "redirect:/cart";
     }
     @GetMapping("/invoices")
     public String order(Model model) {

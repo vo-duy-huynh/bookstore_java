@@ -29,7 +29,7 @@ public class HomeController {
     @GetMapping
     public String showAllBooks(@NotNull Model model,
                                @RequestParam(defaultValue = "0") Integer pageNo,
-                               @RequestParam(defaultValue = "4") Integer pageSize,
+                               @RequestParam(defaultValue = "8") Integer pageSize,
                                @RequestParam(defaultValue = "id") String sortBy) {
         model.addAttribute("books", bookService.getAllBooks(pageNo, pageSize, sortBy));
         model.addAttribute("currentPage", pageNo);
@@ -37,5 +37,17 @@ public class HomeController {
         model.addAttribute("totalPages", bookService.getAllBooks(pageNo, pageSize, sortBy).size() / pageSize);
         model.addAttribute("categories", categoryService.getAllCategories());
         return "home/index";
+    }
+    @GetMapping("/error/403")
+    public String error403() {
+        return "error/403";
+    }
+    @GetMapping("/error/404")
+    public String error404() {
+        return "error/404";
+    }
+    @GetMapping("/error/500")
+    public String error500() {
+        return "error/500";
     }
 }

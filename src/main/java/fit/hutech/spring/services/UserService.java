@@ -8,6 +8,8 @@ import fit.hutech.spring.repositories.IUserRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,23 +26,25 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
 
     @Autowired
-    private  IUserRepository userRepository;
+    private IUserRepository userRepository;
 
     @Autowired
-    private  IRoleRepository roleRepository;
+    private IRoleRepository roleRepository;
 
     public void save(@NotNull User user) {
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(user);
     }
 
-    public void setDefaultRole(String username){
+    public void setDefaultRole(String username) {
         userRepository.findByUsername(username).ifPresentOrElse(
                 u -> {
                     u.getRoles().add(roleRepository.findRoleById(Role.USER.value));
                     userRepository.save(u);
                 },
-                () -> { throw new UsernameNotFoundException("User not found"); }
+                () -> {
+                    throw new UsernameNotFoundException("User not found");
+                }
         );
     }
 
@@ -64,7 +69,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void saveOauthUser(String email, @NotNull String username) {
-        if(userRepository.findByUsername(username).isPresent())
+        if (userRepository.findByUsername(username).isPresent())
             return;
 
         var user = new User();
@@ -75,4 +80,11 @@ public class UserService implements UserDetailsService {
         user.getRoles().add(roleRepository.findRoleById(Role.USER.value));
         userRepository.save(user);
     }
+
+    public void getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        System.out.println(currentPrincipalName);
+    }
+
 }

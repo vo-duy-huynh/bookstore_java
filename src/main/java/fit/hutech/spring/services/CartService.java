@@ -59,7 +59,10 @@ public class CartService {
                 .mapToInt(Item::getQuantity)
                 .sum();
     }
-
+    @PreAuthorize("hasAnyAuthority('USER') or hasAnyAuthority('ADMIN')")
+    public int getSumItem(@NotNull HttpSession session) {
+        return getCart(session).getCartItems().size();
+    }
     @PreAuthorize("hasAnyAuthority('USER') or hasAnyAuthority('ADMIN')")
     public double getSumPrice(@NotNull HttpSession session) {
         return getCart(session).getCartItems().stream()

@@ -30,7 +30,18 @@ public class BookService {
     public Optional<Book> getBookById(Long id) {
         return bookRepository.findById(id);
     }
-
+    @PreAuthorize("hasAnyAuthority('USER') or hasAnyAuthority('ADMIN')")
+    public Optional<Cover> getCoverById(Long id) {
+        return coverRepository.getCoverById(id);
+    }
+    public Book getBookByIdAll(Long id) {
+        for (Book book : getBookList()) {
+            if (id == book.getId()) {
+                return book;
+            }
+        }
+        return null;
+    }
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public void addBook(Book book) {
 
@@ -96,6 +107,10 @@ public class BookService {
         existingBook.setAuthor(book.getAuthor());
         existingBook.setPrice(book.getPrice());
         existingBook.setCategory(book.getCategory());
+        existingBook.setQuantity(book.getQuantity());
+        existingBook.setDescription(book.getDescription());
+        existingBook.setIsSale(book.getIsSale());
+        existingBook.setSalePercent(book.getSalePercent());
         bookRepository.save(existingBook);
     }
 
@@ -107,5 +122,11 @@ public class BookService {
     @PreAuthorize("hasAnyAuthority('USER') or hasAnyAuthority('ADMIN')")
     public List<Book> searchBook(String keyword) {
         return bookRepository.searchBook(keyword);
+    }
+
+    public void addBookToCart(Long id) {
+        Book book = bookRepository.findById(id).orElse(null);
+        Objects.requireNonNull(book).setQuantity(book.getQuantity() - 1);
+        bookRepository.save(book);
     }
 }

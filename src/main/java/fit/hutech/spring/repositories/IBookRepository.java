@@ -9,6 +9,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IBookRepository extends PagingAndSortingRepository<Book, Long>, JpaRepository<Book, Long> {
@@ -25,4 +26,6 @@ public interface IBookRepository extends PagingAndSortingRepository<Book, Long>,
         return findAll(PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
                     .getContent();
     }
+    //get list cover by book id
+
 }

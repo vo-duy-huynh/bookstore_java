@@ -5,11 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Access Denied</title>
-    <th:block th:replace="~{layout::link-css}"></th:block>
-    <th:block th:replace="~{layout::custom-css}"></th:block>
+    <th:block th:replace="~{layout::assets-css}"></th:block>
 </head>
 <body>
 <th:block th:replace="~{layout::header}"></th:block>
+<th:block th:replace="~{layout::mobile-form}"></th:block>
 <div class="d-flex align-items-center justify-content-center vh-25">
     <div class="text-center">
         <h1 class="display-1 fw-bold">403</h1>
@@ -21,5 +21,7 @@
     </div>
 </div>
 <th:block th:replace="~{layout::footer}"></th:block>
+<th:block th:replace="~{layout::action-after-footer}"></th:block>
+<th:block th:replace="~{layout::script}"></th:block>
 </body>
 </html>

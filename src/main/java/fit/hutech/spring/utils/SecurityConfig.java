@@ -51,10 +51,10 @@ public class SecurityConfig{
     public SecurityFilterChain securityFilterChain(@NotNull HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**","/assets/", "/", "/oauth/**", "/register", "/error", "/books/set-view-image/**", "/books/delete-image/**", "/assets/css/vendor")
+                        .requestMatchers("/css/**", "/js/**","/assets/", "/", "/oauth/**", "/register", "/error", "/books/set-view-image/**", "/books/delete-image/**", "/assets/css/vendor", "/books/add/**", "/books/search/**", "/books/add-to-cart")
                         .permitAll()
-                        .requestMatchers("/books/edit/**", "/books/add", "/books/delete")
-                        .hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers("/books/edit/**", "/books/add/**", "/books/delete")
+                        .hasAnyAuthority("ADMIN")
                         .requestMatchers("/books", "/cart", "/cart/**")
                         .hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers("/api/**")

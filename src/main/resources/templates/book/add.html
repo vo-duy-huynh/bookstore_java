@@ -4,14 +4,27 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <th:block th:replace="~{layout::assets-css}"></th:block>
-  <title>Add Book</title>
+  <th:block th:replace="~{LayoutAdmin :: admin-css}"></th:block>
+  <link href='https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css' rel='stylesheet' type='text/css' />
+  <title>Shop Pro</title>
 </head>
 <body>
-<th:block th:replace="~{layout::header}"></th:block>
-<th:block th:replace="~{layout::mobile-form}"></th:block>
-<div class="container">
-  <h1>Add Book</h1>
+<th:block th:replace="LayoutAdmin :: header"></th:block>
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Admin</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a >Home</a></li>
+        <li class="breadcrumb-item">Products</li>
+        <li class="breadcrumb-item active">Add</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section dashboard">
+
+    <div class="container">
   <form th:action="@{/books/add}" th:object="${book}" method="post" enctype="multipart/form-data">
     <div class="col-6 mb-3">
       <label class="form-label" for="title">Title:</label><span class="text-danger">*</span>
@@ -30,7 +43,7 @@
     </div>
     <div class="col-6 mb-3">
       <label class="form-label" for="quantity">Quantity:</label><span class="text-danger">*</span>
-      <input class="form-control" required type="text" th:field="*{quantity}" id="quantity" placeholder="Enter quantity">
+      <input class="form-control" required type="number" th:field="*{quantity}" id="quantity" placeholder="Enter quantity">
       <span class="text-danger" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></span>
     </div>
     <div class="col-6 mb-3">
@@ -39,11 +52,11 @@
       <span class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
     </div>
     <div class="col-6 mb-3">
-      <label class="form-label" for="isSale">Is Sale:</label>
-      <input class="form-control" type="checkbox" th:field="*{isSale}" id="isSale" placeholder="Enter isSale">
-      <span class="text-danger" th:if="${#fields.hasErrors('isSale')}" th:errors="*{isSale}"></span>
+      <label for="isSale">On Sale:</label>
+      <span><input  type="checkbox" th:field="*{isSale}" id="isSale" /></span>
+<!--      <span class="text-danger" th:if="${#fields.hasErrors('isSale')}" th:errors="*{isSale}"></span>-->
     </div>
-    <div class="col-6 mb-3">
+    <div class="col-6 mb-3" style="display: none">
       <label class="form-label" for="salePercent">Sale Percent:</label>
       <input class="form-control" type="text" th:field="*{salePercent}" id="salePercent" placeholder="Enter salePercent">
       <span class="text-danger" th:if="${#fields.hasErrors('salePercent')}" th:errors="*{salePercent}"></span>
@@ -57,7 +70,6 @@
       </select>
       <span class="text-danger" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></span>
     </div>
-<!--   image cover-->
     <div class="group">
       <label class="form-label" for="images" >Chọn Ảnh: </label>
       <input type="file" id="images" name="imgList" multiple accept="image/*" />
@@ -67,8 +79,26 @@
   <br>
   <a th:href="@{/books}">Back to List</a>
 </div>
-<th:block th:replace="~{layout::footer}"></th:block>
-<th:block th:replace="~{layout::action-after-footer}"></th:block>
-<th:block th:replace="~{layout::script}"></th:block>
+  </section>
+
+</main><!-- End #main -->
+<th:block th:replace="LayoutAdmin :: scripts"></th:block>
+<script>
+  $(document).ready(function () {
+    $('#salePercent').val(0);
+    $('#isSale').change(function () {
+      if ($(this).is(':checked')) {
+        $('#salePercent').parent().show();
+      } else {
+        $('#salePercent').parent().hide();
+      }
+    });
+  });
+</script>
+<script type='text/javascript' src='https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js'></script>
+<script>
+  var editor = new FroalaEditor('#description');
+</script>
+
 </body>
 </html>

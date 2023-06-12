@@ -24,8 +24,8 @@ public class Cover {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "urlImage", length = 50, nullable = false)
-    @Size(min = 1, max = 50, message = "UrlImage must be between 1 and 50 characters")
+    @Column(name = "urlImage", length = 500, nullable = false)
+    @Size(min = 1, max = 500, message = "UrlImage must be between 1 and 500 characters")
     @NotBlank(message = "Name must not be blank")
     private String urlImage;
 
