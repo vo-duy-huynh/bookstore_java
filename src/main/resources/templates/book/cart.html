@@ -57,7 +57,7 @@
             <td class="price" th:text="${item.getPrice()}"></td>
             <td class="price" th:text="${item.getPrice() * item.getQuantity()}"></td>
             <td>
-                <a class="btn btn-danger"
+                <a class="btn btn-pink"
                    th:href="@{/cart/removeFromCart/{id}(id=${item.getBookId()})}">
                     Remove
                 </a>
@@ -71,7 +71,7 @@
         </div>
         <div class="col-md-12 text-center">
             <a class="btn btn-success" th:href="@{/cart/checkout}">Checkout</a>
-            <a class="btn btn-danger" th:href="@{/cart/clearCart}">Clear Cart</a>
+            <a class="btn btn-pink" th:href="@{/cart/clearCart}">Clear Cart</a>
         </div>
     </div>
 </div>

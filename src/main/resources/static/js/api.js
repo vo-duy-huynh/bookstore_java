@@ -31,7 +31,45 @@ $(document).ready(function () {
             $('#book-table-body').append(trHTML);
         }
     });
+    $.ajax({
+        url: 'http://localhost:8080/api/v1/categories',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            let trHTML = '';
+            $.each(data, function (i, item) {
+                trHTML = trHTML + '<tr id="category-' + item.id + '">' +
+                    '<td>' + item.id + '</td>' +
+                    '<td>' + item.name + '</td>' +
+                    '<td colspan="3">' +
+                    '<a class="btn btn-primary" ' +
+                    'sec:authorize="hasAnyAuthority(\'ADMIN\')" ' +
+                    'onclick="openEditCategory(' + item.id + ', \'' + item.name + '\')" ' +
+                    ' data-bs-target="#exampleModalCenter" data-bs-toggle="modal" ' +
+                    '>Edit</a>' +
+                    '<a class="btn btn-danger" href="/categories" ' + item.id + '  ' +
+                    'onclick="apiDeleteCategory(' + item.id + ', this); return false;" ' +
+                    'sec:authorize="hasAnyAuthority(\'ADMIN\')">Delete</a>' +
+                    '</td>' +
+                    '</tr>';
+            });
+            $('#category-table-body').append(trHTML);
+        }
+    });
 });
+
+function apiDeleteCategory(id) {
+    if (confirm('Are you sure you want to delete this category?')) {
+        $.ajax({
+            url: 'http://localhost:8080/api/v1/categories/' + id,
+            type: 'DELETE',
+            success: function (result) {
+                alert('Deleted successfully')
+                $('#category-' + id).remove();
+            }
+        });
+    }
+}
 
 function apiDeleteBook(id) {
     if (confirm('Are you sure you want to delete this book?')) {

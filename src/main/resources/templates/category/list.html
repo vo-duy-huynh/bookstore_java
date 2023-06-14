@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Pro</title>
+  <th:block th:replace="~{LayoutAdmin :: admin-css}"></th:block>
+  <style>
+    .table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+    .table th {
+      text-align: center;
+      vertical-align: middle;
+    }
+    .table {
+      margin-top: 20px;
+    }
+
+
+  </style>
+</head>
+<body>
+<th:block th:replace="LayoutAdmin :: header"></th:block>
+
+<!-- Modal -->
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Admin</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a >Home</a></li>
+        <li class="breadcrumb-item active">Categories</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section dashboard">
+
+      <div class="row">
+        <div class="col-md-12">
+          <nav class="navbar navbar-light">
+            <div class="container-fluid">
+                <a class="btn btn-success" th:onclick="openNewCategory()" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">Add New Category</a>
+            </div>
+          </nav>
+        </div>
+      </div>
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Category</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form action="/categories/add" method="post" id="add-category" style="display: none">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" name="name" id="name">
+              <input type="submit" class="btn btn-success" value="Save" />
+            </form>
+            <form action="/categories/edit" method="post" id="edit-category" style="display: none">
+              <input type="hidden" name="editId" id="editId">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" name="editName" id="editName">
+              <input type="submit" class="btn btn-success" value="Save" />
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-success" id="save-category-modal">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="category-table-body">
+        </tbody>
+      </table>
+  </section>
+
+</main><!-- End #main -->
+<th:block th:replace="LayoutAdmin :: scripts"></th:block>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  function categoryNew() {
+    let category = {
+      name: $('#name').val()
+    };
+    console.log(category);
+    $.ajax({
+      type: 'POST',
+      url: 'http://localhost:8080/api/v1/categories',
+      contentType: 'application/json',
+      data: JSON.stringify(category),
+      success: function(response) {
+        toastr.success('Category created api successfully');
+        $('#name').val('');
+        $('#exampleModalCenter').modal('hide');
+        getCategoryList();
+      },
+      error: function(xhr, status, error) {
+        console.error('Error creating category:', error);
+      }
+    });
+  }
+    function categoryEdit() {
+        let category = {
+        id: $('#editId').val(),
+        name: $('#editName').val()
+        }
+        $.ajax({
+        type: 'PUT',
+        url: 'http://localhost:8080/api/v1/categories/' + category.id,
+        contentType: 'application/json',
+        data: JSON.stringify(category),
+        success: function(response) {
+            toastr.success('Category updated api successfully');
+            $('#editName').val('');
+            $('#exampleModalCenter').modal('hide');
+            getCategoryList();
+        },
+        error: function(xhr, status, error) {
+            console.error('Error creating category:', error);
+        }
+        });
+    }
+    function getCategoryList() {
+        $.ajax({
+        type: 'GET',
+        url: 'http://localhost:8080/api/v1/categories',
+        success: function(response) {
+            console.log('Success:', response);
+            let categoryList = response;
+            let categoryTableBody = $('#category-table-body');
+            categoryTableBody.empty();
+            for (let i = 0; i < categoryList.length; i++) {
+            let category = categoryList[i];
+            categoryTableBody.append('' +
+                '<tr>' +
+                '<td>' + category.id + '</td>' +
+                '<td>' + category.name + '</td>' +
+                '<td>' +
+                '<a class="btn btn-primary" onclick="openEditCategory(' + category.id + ',\'' + category.name + '\')" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">Edit</a>' +
+                '<a class="btn btn-danger" onclick="apiDeleteCategory(' + category.id + ')">Delete</a>' +
+                '</td>' +
+                '</tr>'
+            );
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);
+            // Handle error cases and display appropriate messages
+        }
+        });
+    }
+</script>
+<script>
+  function openNewCategory() {
+    document.getElementById("add-category").style.display = "block";
+    document.getElementById("save-category-modal").setAttribute("onclick", "categoryNew()");
+  }
+  function openEditCategory(id, name) {
+    document.getElementById("edit-category").style.display = "block";
+    document.getElementById("editId").value = id;
+    document.getElementById("editName").value = name;
+    document.getElementById("save-category-modal").setAttribute("onclick", "categoryEdit()");
+  }
+  $('#exampleModalCenter').on('hidden.bs.modal', function () {
+    document.getElementById("add-category").style.display = "none";
+    document.getElementById("edit-category").style.display = "none";
+  })
+
+</script>
+</body>
+</html>

@@ -5,8 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List Check Out</title>
-    <th:block th:replace="~{layout::link-css}"></th:block>
-    <th:block th:replace="~{layout::custom-css}"></th:block>
+    <th:block th:replace="~{LayoutAdmin :: admin-css}"></th:block>
     <style>
         .table td {
             text-align: center;
@@ -24,7 +23,19 @@
     </style>
 </head>
 <body>
-<th:block th:replace="~{layout::header}"></th:block>
+<th:block th:replace="LayoutAdmin :: header"></th:block>
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Dashboard</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a >Home</a></li>
+                <li class="breadcrumb-item active">Products</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
 <div class="container" >
     <h2 th:text=" 'Invoices Detail Of ' + ${user.toUpperCase()}">  </h2>
     <table class="table">
@@ -64,8 +75,11 @@
         </tbody>
     </table>
 </div>
+    </section>
 
-<th:block th:replace="~{layout::footer}"></th:block>
+</main><!-- End #main -->
+
+<th:block th:replace="LayoutAdmin :: scripts"></th:block>
 <script th:src="@{/js/cart.js}"></script>
 </body>
 </html>
