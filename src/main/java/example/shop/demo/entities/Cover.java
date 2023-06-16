@@ -27,9 +27,9 @@ public class Cover {
     @Column(name = "isThumbnail", nullable = false)
     private Boolean isThumbnail;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", referencedColumnName = "id")
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
     @ToString.Exclude
-    private Book book;
+    private Product product;
 
 //    @Override
 //    public boolean equals(Object o) {

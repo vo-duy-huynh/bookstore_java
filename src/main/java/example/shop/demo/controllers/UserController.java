@@ -4,6 +4,7 @@ import example.shop.demo.entities.Role;
 import example.shop.demo.entities.User;
 import example.shop.demo.services.UserService;
 import example.shop.demo.dto.UserDTO;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -50,39 +51,19 @@ public class UserController {
         userService.setDefaultRole(user.getUsername());
         return "redirect:/login";
     }
-    @GetMapping("/details/{username}")
-    public String profile(@NotNull @PathVariable String username, Model model){
-        Optional<User> opUser = userService.findByUsername(username);
-        if(opUser.isPresent()){
-            User user = opUser.get();
-            UserDTO userDTO = new UserDTO();
-            userDTO.setId(user.getId());
-            userDTO.setUsername(user.getUsername());
-            userDTO.setPhone(user.getPhone());
-            userDTO.setEmail(user.getEmail());
-            userDTO.setProvider(user.getProvider());
-            userDTO.setPassword(user.getPassword());
-            List<Long> roleIds = new ArrayList<>();
-            for (Role item:user.getRoles()) {
-                roleIds.add(item.getId());
-            }
-            userDTO.setRoleIds(roleIds);
-            model.addAttribute("userDTO", userDTO);
-            List<Role> roles = new ArrayList<>();
-            Role role = new Role();
-            role.setId(1L);
-            role.setName("ADMIN");
-            roles.add(role);
-            Role role2 = new Role();
-            role2.setId(2L);
-            role2.setName("USER");
-            roles.add(role2);
-            model.addAttribute("roles", roles);
-        }
+    @GetMapping("/profile-user")
+    public String profileUser(HttpSession session, Model model){
+        var user = (UserDTO) session.getAttribute("user");
+
         return "user/profile";
     }
     @GetMapping("/admin/users")
     public String users(){
         return "user/list";
+    }
+    @GetMapping("/logout")
+    public String logout(HttpSession session){
+        session.invalidate();
+        return "redirect:/login";
     }
 }

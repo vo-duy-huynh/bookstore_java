@@ -17,8 +17,6 @@ import java.util.Optional;
 @Transactional
 public class CategoryService {
     private final ICategoryRepository categoryRepository;
-
-    @PreAuthorize("hasAnyAuthority('USER') or hasAnyAuthority('ADMIN')")
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }

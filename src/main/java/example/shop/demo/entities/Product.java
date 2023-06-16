@@ -17,10 +17,10 @@ import java.util.Objects;
 @ToString
 @Entity
 @Builder
-@Table(name = "book")
+@Table(name = "product")
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class Book {
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,24 +41,23 @@ public class Book {
     @Column(name = "quantity")
     @Positive(message = "Quantity must be greater than 0")
     private Integer quantity;
-    @Column(name = "description", length = 1000)
-    @Size(max = 1000, message = "Description must be less than 1000 characters")
+    @Column(name = "description", length = 10000)
+    @Size(max = 10000, message = "Description must be less than 10000 characters")
     private String description;
     @Column(name = "is_sale")
     private Boolean isSale;
     @Column(name = "sale_percent")
-    @Positive(message = "Sale percent must be greater than 0")
     private Integer salePercent;
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "product")
     @ToString.Exclude
-    private List<Cover> cover = new ArrayList<>();
+    private List<Cover> covers = new ArrayList<>();
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ValidCategoryId
     @ToString.Exclude
     private Category category;
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "product")
     @ToString.Exclude
     private List<ItemInvoice> itemInvoices = new ArrayList<>();
 
@@ -66,8 +65,8 @@ public class Book {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Book book = (Book) o;
-        return getId() != null && Objects.equals(getId(), book.getId());
+        Product product = (Product) o;
+        return getId() != null && Objects.equals(getId(), product.getId());
     }
 
     @Override

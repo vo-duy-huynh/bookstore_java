@@ -31,7 +31,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @ToString.Exclude
-    private List<Book> books = new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

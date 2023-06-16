@@ -12,7 +12,7 @@ public class Cart {
 
     public void addItems(Item item) {
         boolean isExist = cartItems.stream()
-                .filter(i -> Objects.equals(i.getBookId(), item.getBookId()))
+                .filter(i -> Objects.equals(i.getProductId(), item.getProductId()))
                 .findFirst()
                 .map(i -> {
                     i.setQuantity(i.getQuantity() + item.getQuantity());
@@ -25,13 +25,13 @@ public class Cart {
         }
     }
 
-    public void removeItems(Long bookId) {
-        cartItems.removeIf(item -> Objects.equals(item.getBookId(), bookId));
+    public void removeItems(Long productId) {
+        cartItems.removeIf(item -> Objects.equals(item.getProductId(), productId));
     }
 
-    public void updateItems(Long bookId, int quantity) {
+    public void updateItems(Long productId, int quantity) {
         cartItems.stream()
-                .filter(item -> Objects.equals(item.getBookId(), bookId))
+                .filter(item -> Objects.equals(item.getProductId(), productId))
                 .forEach(item -> item.setQuantity(quantity));
     }
 }

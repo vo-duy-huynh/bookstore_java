@@ -5,9 +5,9 @@ import example.shop.demo.daos.Item;
 import example.shop.demo.entities.Invoice;
 import example.shop.demo.entities.ItemInvoice;
 import example.shop.demo.entities.User;
-import example.shop.demo.repositories.IBookRepository;
 import example.shop.demo.repositories.IInvoiceRepository;
 import example.shop.demo.repositories.IItemInvoiceRepository;
+import example.shop.demo.repositories.IProductRepository;
 import example.shop.demo.repositories.IUserRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +29,7 @@ public class CartService {
 
     private final IItemInvoiceRepository itemInvoiceRepository;
 
-    private final IBookRepository bookRepository;
+    private final IProductRepository bookRepository;
     private  final IUserRepository userRepository;
 
     @PreAuthorize("hasAnyAuthority('USER') or hasAnyAuthority('ADMIN')")
@@ -85,7 +85,7 @@ public class CartService {
             items.setInvoice(invoice);
             items.setCover(item.getCover());
             items.setQuantity(item.getQuantity());
-            items.setBook(bookRepository.findById(item.getBookId()).orElseThrow());
+            items.setProduct(bookRepository.findById(item.getProductId()).orElseThrow());
             itemInvoiceRepository.save(items);
         });
 

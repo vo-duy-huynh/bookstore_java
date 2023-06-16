@@ -1,7 +1,7 @@
 package example.shop.demo.controllers;
 
-import example.shop.demo.entities.Book;
-import example.shop.demo.services.BookService;
+import example.shop.demo.entities.Product;
+import example.shop.demo.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,19 +13,19 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/books")
-public class BookApiController {
+public class ProductApiController {
 
     @Autowired
-    private BookService bookRepository;
+    private ProductService bookRepository;
 
-    public BookApiController(BookService bookRepository) {
+    public ProductApiController(ProductService bookRepository) {
         this.bookRepository = bookRepository;
     }
 
 //    get BookByID return json
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
-        Optional<Book> book = bookRepository.getBookById(id);
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        Optional<Product> book = bookRepository.getBookById(id);
         if (book.isPresent()) {
             return ResponseEntity.ok(book.get());
         }

@@ -605,10 +605,21 @@ progress {
 }
 
 .img-fluid {
-    max-width: 100%;
-    height: auto;
+    width: 200px;
+    height: 200px;
 }
-
+.img-fluid-2 {
+    width: 330px;
+    height: 330px;
+}
+.img-fluid-modal{
+    width: 90px;
+    height: 90px;
+}
+.img-fluid-banner-two{
+    width: auto;
+    height: 100%;
+}
 .img-thumbnail {
     padding: 4px;
     background-color: #FFF;
@@ -15410,8 +15421,6 @@ input {
     position: relative;
 }
 .product-default-single-item .image-link img {
-    width: 100%;
-    height: auto;
     transition: all 0.5s ease;
 }
 .product-default-single-item .image-link img:nth-child(2) {

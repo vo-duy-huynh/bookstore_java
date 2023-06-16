@@ -26,9 +26,9 @@ public class ItemInvoice {
     @Column(name = "cover")
     private String cover;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", referencedColumnName = "id")
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
     @ToString.Exclude
-    private Book book;
+    private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_id", referencedColumnName = "id")

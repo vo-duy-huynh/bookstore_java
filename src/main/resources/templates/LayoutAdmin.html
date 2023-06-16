@@ -44,7 +44,7 @@
   <div class="d-flex align-items-center justify-content-between">
     <a th:href="@{/admin}" class="logo d-flex align-items-center">
       <!--      <img th:src="@{assets/img/logo.png}" alt="">-->
-      <span class="d-none d-lg-block">SHOP LAPTOP</span>
+      <span class="d-none d-lg-block">SHOP PRO</span>
     </a>
     <i class="bi bi-list toggle-sidebar-btn"></i>
   </div><!-- End Logo -->
@@ -259,7 +259,7 @@
       </li><!-- End Components Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" th:href="@{/books}">
+        <a class="nav-link collapsed" th:href="@{/products}">
           <i class="bi bi-journal-text"></i><span>QUẢN LÝ SẢN PHẨM</span>
         </a>
       </li><!-- End Forms Nav -->
@@ -271,7 +271,7 @@
       </li><!-- End Tables Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" th:href="@{/books/invoices}">
+        <a class="nav-link collapsed" th:href="@{/products/invoices}">
           <i class="bi bi-cart-check"></i><span>QUẢN LÝ HÓA ĐƠN</span>
         </a>
       </li><!-- End Icons Nav -->
@@ -290,7 +290,7 @@
       </li><!-- End Contact Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#">
+        <a class="nav-link collapsed" th:href="@{/logout}">
           <i class="bi bi-box-arrow-in-left"></i>
           <span>ĐĂNG XUẤT</span>
         </a>
@@ -336,6 +336,7 @@
   <script th:src="@{/js/jquery-3.7.0.min.js}"></script>
   <!-- Template Main JS File -->
   <script th:src="@{/assetsAdmin/js/main.js}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script th:src="@{/js/api.js}"></script>
   <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
@@ -345,6 +346,7 @@
         var formattedPrice = new Intl.NumberFormat('vi-VN').format(parseFloat(price));
         priceElement.textContent = formattedPrice + ' đ';
       });
+
     });
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>

@@ -1,13 +1,13 @@
 package example.shop.demo.controllers;
 
 import example.shop.demo.dto.NewDTO;
-import example.shop.demo.entities.Book;
+import example.shop.demo.dto.ProductDTO;
 import example.shop.demo.entities.Category;
-import example.shop.demo.services.BookService;
+import example.shop.demo.entities.Product;
+import example.shop.demo.services.ProductService;
 import example.shop.demo.services.CartService;
 import example.shop.demo.services.CategoryService;
 import example.shop.demo.viewmodels.*;
-import fit.hutech.spring.viewmodels.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -23,41 +23,40 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin("*")
-@RequiredArgsConstructor
 public class ApiController {
-    private final BookService bookService;
-
-    private final CategoryService categoryService;
-    private final CartService cartService;
-
-    @GetMapping("/books")
-    public ResponseEntity<List<BookGetVm>> getAllBooks(Integer pageNo, Integer pageSize, String sortBy) {
-        return ResponseEntity.ok(bookService.getAllBooks(
-                pageNo == null ? 0 : pageNo,
-                pageSize == null ? 20 : pageSize,
-                sortBy == null ? "id" : sortBy)
-                .stream()
-                .map(BookGetVm::from)
-                .toList());
+    private ProductService productService;
+    private CategoryService categoryService;
+    private CartService cartService;
+    public ApiController(ProductService productService, CategoryService categoryService, CartService cartService) {
+        this.categoryService = categoryService;
+        this.cartService = cartService;
+        this.productService = productService;
     }
 
-    @GetMapping("/books/id/{id}")
-    public ResponseEntity<BookGetVm> getBookById(@PathVariable Long id) {
-        return ResponseEntity.ok(bookService.getBookById(id)
-                .map(BookGetVm::from)
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductGetVm>> getAllProducts() {
+        return ResponseEntity.ok(productService.findAllProducts()
+                .stream()
+                .map(ProductGetVm::from)
+                .toList());
+    }
+    @GetMapping("/products/id/{id}")
+    public ResponseEntity<ProductGetVm> getProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getBookById(id)
+                .map(ProductGetVm::from)
                 .orElse(null));
     }
     //covers is string
-    @GetMapping("/covers/book/{id}")
+    @GetMapping("/covers/product/{id}")
     public ResponseEntity<List<CoversBookVm>> getCoversByBookId(@PathVariable Long id) {
-        return ResponseEntity.ok(bookService.getCoverByBookId(id)
+        return ResponseEntity.ok(productService.getCoverByBookId(id)
                 .stream()
                 .map(CoversBookVm::from)
                 .toList());
     }
-    @PostMapping("/books")
-    public ResponseEntity<Void> createBook(@RequestBody @NotNull BookPostVm bookPostVm) {
-        bookService.addBook(Book.builder()
+    @PostMapping("/products")
+    public ResponseEntity<Void> createBook(@RequestBody @NotNull ProductPostVm bookPostVm) {
+        productService.addProduct(Product.builder()
                 .title(bookPostVm.title())
                 .author(bookPostVm.author())
                 .price(bookPostVm.price())
@@ -67,7 +66,7 @@ public class ApiController {
     }
     @GetMapping("/cart/add/{id}")
     public ResponseEntity<Void> addBookToCart(@PathVariable Long id) {
-        bookService.addBookToCart(id);
+        productService.addProductToCart(id);
         return ResponseEntity.ok().build();
     }
     @GetMapping("/cart/item-count")
@@ -78,36 +77,36 @@ public class ApiController {
         response.put("count", itemCount);
         return response;
     }
-    @PutMapping("/books")
-    public ResponseEntity<Void> updateBook(@RequestBody @NotNull BookPostVm bookPostVm) {
-        bookService.updateBook(Book.builder()
-                .title(bookPostVm.title())
-                .author(bookPostVm.author())
-                .price(bookPostVm.price())
-                .category(categoryService.getCategoryById(bookPostVm.categoryId()).orElse(null))
+    @PutMapping("/products")
+    public ResponseEntity<Void> updateProduct(@RequestBody @NotNull ProductPostVm productPostVm) {
+        productService.updateProduct(Product.builder()
+                .title(productPostVm.title())
+                .author(productPostVm.author())
+                .price(productPostVm.price())
+                .category(categoryService.getCategoryById(productPostVm.categoryId()).orElse(null))
                 .build());
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/books/{id}")
-    public ResponseEntity<Void> deleteBookById(@PathVariable Long id) {
-        bookService.deleteBookById(id);
+    @DeleteMapping("/products/{id}")
+    public ResponseEntity<Void> deleteProductById(@PathVariable Long id) {
+        productService.deleteBookById(id);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/books/search")
-    public ResponseEntity<List<BookGetVm>> searchBooks(String keyword) {
-        return ResponseEntity.ok(bookService.searchBook(keyword)
+    @GetMapping("/products/search")
+    public ResponseEntity<List<ProductGetVm>> searchProducts(String keyword) {
+        return ResponseEntity.ok(productService.searchProduct(keyword)
                 .stream()
-                .map(BookGetVm::from)
+                .map(ProductGetVm::from)
                 .toList());
     }
-    @GetMapping("/books/{productId}/details")
+    @GetMapping("/products/{productId}/details")
     @ResponseBody
-    public Book getProductDetails(@PathVariable Long productId) {
+    public Product getProductDetails(@PathVariable Long productId) {
         // Retrieve the product details based on the provided product ID
-        Book book = bookService.getBookByIdAll(productId);
-        return book;
+        Product product = productService.getBookByIdAll(productId);
+        return product;
     }
     @GetMapping("/categories")
     public ResponseEntity<List<CategoryGetVm>> getAllCategories() {

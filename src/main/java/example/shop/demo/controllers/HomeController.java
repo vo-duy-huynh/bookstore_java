@@ -2,7 +2,7 @@ package example.shop.demo.controllers;
 
 import example.shop.demo.repositories.IInvoiceRepository;
 import example.shop.demo.repositories.IItemInvoiceRepository;
-import example.shop.demo.services.BookService;
+import example.shop.demo.services.ProductService;
 import example.shop.demo.services.CartService;
 import example.shop.demo.services.CategoryService;
 import example.shop.demo.services.UserService;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/")
 @RequiredArgsConstructor
 public class HomeController {
-    private final BookService bookService;
+    private final ProductService productService;
 
     private final CategoryService categoryService;
 
@@ -26,17 +26,24 @@ public class HomeController {
     private final UserService userService;
     private final IInvoiceRepository invoiceRepository;
     private final IItemInvoiceRepository itemInvoiceRepository;
-    @GetMapping
-    public String showAllBooks(@NotNull Model model,
+    @GetMapping("/")
+    public String showAllProducts(@NotNull Model model) {
+        model.addAttribute("products", productService.findAllProducts());
+        model.addAttribute("covers", productService.getCoverList());
+        model.addAttribute("categories", categoryService.getAllCategories());
+        return "home/index";
+    }
+    @GetMapping("/shop")
+    public String showAllProductShops(@NotNull Model model,
                                @RequestParam(defaultValue = "0") Integer pageNo,
                                @RequestParam(defaultValue = "8") Integer pageSize,
                                @RequestParam(defaultValue = "id") String sortBy) {
-        model.addAttribute("books", bookService.getAllBooks(pageNo, pageSize, sortBy));
+        model.addAttribute("products", productService.getAllProducts(pageNo, pageSize, sortBy));
         model.addAttribute("currentPage", pageNo);
-        model.addAttribute("covers", bookService.getCoverList());
-        model.addAttribute("totalPages", bookService.getAllBooks(pageNo, pageSize, sortBy).size() / pageSize);
+        model.addAttribute("covers", productService.getCoverList());
+        model.addAttribute("totalPages", productService.getAllProducts(pageNo, pageSize, sortBy).size() / pageSize);
         model.addAttribute("categories", categoryService.getAllCategories());
-        return "home/index";
+        return "home/shop";
     }
     @GetMapping("/error/403")
     public String error403() {

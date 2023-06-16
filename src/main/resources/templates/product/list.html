@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Book List</title>
+  <th:block th:replace="~{LayoutAdmin :: admin-css}"></th:block>
+  <link href="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.css" rel="stylesheet"/>
+  <style>
+    .table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+    .table th {
+      text-align: center;
+      vertical-align: middle;
+    }
+    .table {
+      margin-top: 20px;
+    }
+
+
+  </style>
+</head>
+<body>
+<th:block th:replace="LayoutAdmin :: header"></th:block>
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a >Home</a></li>
+        <li class="breadcrumb-item active">Products</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+<!-- button Create new product-->
+  <div class="row">
+    <div class="col-md-12">
+      <a th:href="@{/products/add}" class="btn btn-success pb-2">Create new product</a>
+    </div>
+    </div>
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Product</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-success" id="save-category-modal">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="section dashboard">
+      <table id="tblData" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        <tr>
+          <th>No</th>
+          <th>Cover</th>
+          <th>Title</th>
+          <th>Price</th>
+          <th>Category</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+      </table>
+  </section>
+
+</main><!-- End #main -->
+
+<th:block th:replace="LayoutAdmin :: scripts"></th:block>
+<script src="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.js"></script>
+<script src="/js/productDT.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <th:block th:replace="~{layout::assets-css}"></th:block>
+</head>
+<body style="background: #f6f7fc;">
+<th:block th:replace="~{layout::header}"></th:block>
+<th:block th:replace="~{layout::mobile-form}"></th:block>
+<div class="container py-5 h-100">
+  <div class="row justify-content-center align-items-center h-100">
+    <div class="col-12 col-lg-6 col-md-8 col-xl-5">
+      <div class="card shadow" style="border-radius: 1rem;">
+        <div class="card-body p-5 text-center">
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th scope="col">Username</th>
+              <th scope="col">Email</th>
+              <th scope="col">PassWord</th>
+              <th scope="col">Provider</th>
+              <th scope="col">Phone</th>
+            </tr>
+            </thead>
+            <tbody id="profile-user">
+
+            </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<th:block th:replace="~{layout::footer}"></th:block>
+<th:block th:replace="~{layout::action-after-footer}"></th:block>
+<th:block th:replace="~{layout::script}"></th:block>
+<script>
+  $(document).ready(function () {
+    // get user loging from session
+    $.ajax({
+      url: "/api/v1/users/profile",
+      type: "GET",
+      success: function (result) {
+        console.log(result);
+        var html = '';
+        html += '<tr>';
+        html += '<td>' + result.username + '</td>';
+        html += '<td>' + result.email + '</td>';
+        html += '<td>' + result.password + '</td>';
+        html += '<td>' + result.provider + '</td>';
+        html += '<td>' + result.phone + '</td>';
+        html += '</tr>';
+        $('#profile-user').html(html);
+      }
+    });
+  });
+</script>
+</body>
+</html>

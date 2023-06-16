@@ -24,7 +24,7 @@ public class CartController {
         model.addAttribute("cart", cartService.getCart(session));
         model.addAttribute("totalPrice", cartService.getSumPrice(session));
         model.addAttribute("totalQuantity", cartService.getSumQuantity(session));
-        return "book/cart";
+        return "product/cart";
     }
 
     @GetMapping("/removeFromCart/{id}")

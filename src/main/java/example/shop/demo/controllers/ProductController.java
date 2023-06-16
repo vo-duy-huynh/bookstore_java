@@ -1,12 +1,11 @@
 package example.shop.demo.controllers;
 
 import example.shop.demo.daos.Item;
-import example.shop.demo.entities.Book;
 import example.shop.demo.entities.Cover;
+import example.shop.demo.entities.Product;
 import example.shop.demo.repositories.IInvoiceRepository;
 import example.shop.demo.repositories.IItemInvoiceRepository;
 import example.shop.demo.services.*;
-import fit.hutech.spring.services.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -23,10 +22,10 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
-@RequestMapping("/books")
+@RequestMapping("/products")
 @RequiredArgsConstructor
-public class BookController {
-    private final BookService bookService;
+public class ProductController {
+    private final ProductService productService;
 
     private final CategoryService categoryService;
 
@@ -36,27 +35,27 @@ public class BookController {
     private final IItemInvoiceRepository itemInvoiceRepository;
     private final FileUpload fileUpload;
     @GetMapping
-    public String showAllBooks(@NotNull Model model,
+    public String showAllProducts(@NotNull Model model,
                                @RequestParam(defaultValue = "0") Integer pageNo,
                                @RequestParam(defaultValue = "3") Integer pageSize,
                                @RequestParam(defaultValue = "id") String sortBy) {
-        model.addAttribute("books", bookService.getAllBooks(pageNo, pageSize, sortBy));
+        model.addAttribute("products", productService.getAllProducts(pageNo, pageSize, sortBy));
         model.addAttribute("currentPage", pageNo);
-        model.addAttribute("covers", bookService.getCoverList());
-        model.addAttribute("totalPages", bookService.getAllBooks(pageNo, pageSize, sortBy).size() / pageSize);
+        model.addAttribute("covers", productService.getCoverList());
+        model.addAttribute("totalPages", productService.getAllProducts(pageNo, pageSize, sortBy).size() / pageSize);
         model.addAttribute("categories", categoryService.getAllCategories());
-        return "book/list";
+        return "product/list";
     }
 
     @GetMapping("/add")
-    public String addBookForm(@NotNull Model model) {
-        model.addAttribute("book", new Book());
+    public String addProductForm(@NotNull Model model) {
+        model.addAttribute("product", new Product());
         model.addAttribute("categories", categoryService.getAllCategories());
-        return "book/add";
+        return "product/add";
     }
 
     @PostMapping("/add")
-    public String addBook(@Valid @ModelAttribute("book") Book book,
+    public String addProduct(@Valid @ModelAttribute("product") Product product,
                            @RequestParam("imgList") MultipartFile[] images,
                            @NotNull BindingResult bindingResult,
                            @NotNull Model model) {
@@ -67,44 +66,44 @@ public class BookController {
                     .toArray(String[]::new);
             model.addAttribute("errors", errors);
             model.addAttribute("categories", categoryService.getAllCategories());
-            return "book/edit";
+            return "product/edit";
         }
-        bookService.addBook(book);
+        productService.addProduct(product);
         for (MultipartFile image : images) {
             if (!image.isEmpty()) {
                 try {
                     String imageUrl = fileUpload.uploadFile(image);
-                    Cover bookImage = new Cover();
-                    if (book.getCover().isEmpty()) {
-                        bookImage.setIsThumbnail(true);
+                    Cover productImage = new Cover();
+                    if (product.getCovers().isEmpty()) {
+                        productImage.setIsThumbnail(true);
                     }
                     else {
-                        bookImage.setIsThumbnail(false);
+                        productImage.setIsThumbnail(false);
                     }
-                    bookImage.setUrlImage(imageUrl);
-                    bookImage.setBook(book);
-                    book.getCover().add(bookImage);
-                    bookService.addCover(bookImage);
+                    productImage.setUrlImage(imageUrl);
+                    productImage.setProduct(product);
+                    product.getCovers().add(productImage);
+                    productService.addCover(productImage);
                 } catch (IOException e) {
                     e.printStackTrace();
                     // Handle image upload error
                 }
             }
         }
-        return "redirect:/books";
+        return "redirect:/products";
     }
 
     @GetMapping("/edit/{id}")
     public String editBookForm(@NotNull Model model, @PathVariable long id) {
-        var book = bookService.getBookById(id);
-        model.addAttribute("book", book.orElseThrow(() -> new IllegalArgumentException("Book not found")));
+        var product = productService.getBookById(id);
+        model.addAttribute("product", product.orElseThrow(() -> new IllegalArgumentException("Product not found")));
         model.addAttribute("categories", categoryService.getAllCategories());
-        model.addAttribute("covers", bookService.getCoverByBookId(id));
-        return "book/edit";
+        model.addAttribute("covers", productService.getCoverByBookId(id));
+        return "product/edit";
     }
 
     @PostMapping("/edit")
-    public String editBook(@Valid @ModelAttribute("book") Book book,
+    public String editProduct(@Valid @ModelAttribute("product") Product product,
                            @RequestParam("imgList") MultipartFile[] images,
                            @NotNull BindingResult bindingResult,
                            @NotNull Model model) {
@@ -115,76 +114,76 @@ public class BookController {
                     .toArray(String[]::new);
             model.addAttribute("errors", errors);
             model.addAttribute("categories", categoryService.getAllCategories());
-            return "book/edit";
+            return "product/edit";
         }
-        bookService.updateBook(book);
+        productService.updateProduct(product);
         for (MultipartFile image : images) {
             if (!image.isEmpty()) {
                 try {
                     String imageUrl = fileUpload.uploadFile(image);
-                    Cover bookImage = new Cover();
-                    if (book.getCover().isEmpty()) {
-                        bookImage.setIsThumbnail(true);
+                    Cover productImage = new Cover();
+                    if (product.getCovers().isEmpty()) {
+                        productImage.setIsThumbnail(true);
                     }
                     else {
-                        bookImage.setIsThumbnail(false);
+                        productImage.setIsThumbnail(false);
                     }
-                    bookImage.setUrlImage(imageUrl);
-                    bookImage.setBook(book);
-                    book.getCover().add(bookImage);
-                    bookService.addCover(bookImage);
+                    productImage.setUrlImage(imageUrl);
+                    productImage.setProduct(product);
+                    product.getCovers().add(productImage);
+                    productService.addCover(productImage);
                 } catch (IOException e) {
                     e.printStackTrace();
                     // Handle image upload error
                 }
             }
         }
-        return "redirect:/books";
+        return "redirect:/products";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteBook(@PathVariable long id) {
-        bookService.getBookById(id)
+    public String deleteProduct(@PathVariable long id) {
+        productService.getBookById(id)
                 .ifPresentOrElse(
-                        book -> bookService.deleteBookById(id),
-                        () -> { throw new IllegalArgumentException("Book not found"); }
+                        book -> productService.deleteBookById(id),
+                        () -> { throw new IllegalArgumentException("Product not found"); }
                 );
-        return "redirect:/books";
+        return "redirect:/products";
     }
     @GetMapping("/set-view-image/{id}")
     public String setViewImage(@PathVariable int id, Model model) {
         //set view image = false all
-        List<Cover> images = bookService.getCoverByBookId(bookService.getCoverById(id).getBook().getId());
+        List<Cover> images = productService.getCoverByBookId(productService.getCoverById(id).getProduct().getId());
         for (Cover image : images) {
             image.setIsThumbnail(false);
-            bookService.addCover(image);
+            productService.addCover(image);
         }
-        Cover image = bookService.getCoverById(id);
+        Cover image = productService.getCoverById(id);
         image.setIsThumbnail(true);
-        bookService.addCover(image);
-        return "redirect:/books/edit/"+image.getBook().getId();
+        productService.addCover(image);
+        return "redirect:/products/edit/"+image.getProduct().getId();
     }
     @GetMapping("/delete-image/{id}")
     public String deleteImage(@PathVariable int id, Model model) {
-        Cover image = bookService.getCoverById(id);
-        bookService.removeCover(id);
-        return "redirect:/books/edit/"+image.getBook().getId();
+        Cover image = productService.getCoverById(id);
+        productService.removeCover(id);
+        return "redirect:/products/edit/"+image.getProduct().getId();
     }
     @GetMapping("/search")
-    public String searchBook(
+    public String searchProduct(
             @NotNull Model model,
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") Integer pageNo,
             @RequestParam(defaultValue = "3") Integer pageSize,
             @RequestParam(defaultValue = "id") String sortBy) {
-        model.addAttribute("books", bookService.searchBook(keyword));
+        model.addAttribute("products", productService.searchProduct(keyword));
         model.addAttribute("currentPage", pageNo);
-        model.addAttribute("covers", bookService.getCoverList());
+        model.addAttribute("covers", productService.getCoverList());
         model.addAttribute("totalPages",
-                bookService
-                        .getAllBooks(pageNo, pageSize, sortBy).size() / pageSize);
+                productService
+                        .getAllProducts(pageNo, pageSize, sortBy).size() / pageSize);
         model.addAttribute("categories", categoryService.getAllCategories());
-        return "book/list";
+        return "product/list";
     }
 
     @PostMapping("/add-to-cart")
@@ -205,6 +204,6 @@ public class BookController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         model.addAttribute("user", username);
         model.addAttribute("itemInvoices", itemInvoiceRepository.getItemInvoicesByUser(username));
-        return "book/invoice";
+        return "product/invoice";
     }
 }

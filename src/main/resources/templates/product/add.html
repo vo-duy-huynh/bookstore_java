@@ -25,7 +25,12 @@
   <section class="section dashboard">
 
     <div class="container">
-  <form th:action="@{/books/add}" th:object="${book}" method="post" enctype="multipart/form-data">
+  <form th:action="@{/products/add}" th:object="${product}" method="post" enctype="multipart/form-data">
+    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+
+        <p th:each="err : ${#fields.errors('*')}" th:text="${err}"></p>
+    </div>
+    <p th:each="error : ${errors}" th:text="${error}" class="text-danger text-center"></p>
     <div class="col-6 mb-3">
       <label class="form-label" for="title">Title:</label><span class="text-danger">*</span>
       <input class="form-control" type="text" placeholder="Enter title" th:field="*{title}" id="title" required autofocus >
@@ -59,7 +64,6 @@
     <div class="col-6 mb-3" style="display: none">
       <label class="form-label" for="salePercent">Sale Percent:</label>
       <input class="form-control" type="text" th:field="*{salePercent}" id="salePercent" placeholder="Enter salePercent">
-      <span class="text-danger" th:if="${#fields.hasErrors('salePercent')}" th:errors="*{salePercent}"></span>
     </div>
     <div class="col-6 mb-3">
       <label class="form-label" for="category">Category:</label><span class="text-danger">*</span>
@@ -71,13 +75,19 @@
       <span class="text-danger" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></span>
     </div>
     <div class="group">
-      <label class="form-label" for="images" >Chọn Ảnh: </label>
+      <label class="form-label" for="images" >Chọn Ảnh:(Phải có ít nhất 1 ảnh mới mở submit) </label>
       <input type="file" id="images" name="imgList" multiple accept="image/*" />
     </div>
-    <input type="submit" class="btn btn-primary" value="Save" />
+<!--    preview-->
+    <div class="col-6 mb-3">
+      <div id="preview">
+
+      </div>
+    </div>
+    <input id="btnSubmit" type="submit" class="btn btn-primary" value="Save" disabled />
   </form>
   <br>
-  <a th:href="@{/books}">Back to List</a>
+  <a th:href="@{/products}">Back to List</a>
 </div>
   </section>
 
@@ -98,6 +108,28 @@
 <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js'></script>
 <script>
   var editor = new FroalaEditor('#description');
+</script>
+<script>
+  $(document).ready(function () {
+    $('#images').change(function () {
+      if ($(this).val() != '') {
+        $('#btnSubmit').attr('disabled', false);
+        var files = $(this)[0].files;
+        var html = '';
+        $.each(files, function (i, file) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            html += '<img src="' + e.target.result + '" width="100px" height="100px" />';
+            $('#preview').html(html);
+          }
+          reader.readAsDataURL(file);
+        });
+
+      } else {
+        $('#btnSubmit').attr('disabled', true);
+      }
+    });
+  });
 </script>
 
 </body>

@@ -60,16 +60,16 @@
                 <img th:src="@{${itemInvoice.getCover()}}"
                      style="width: 100px; height: 100px">
             </td>
-            <td th:text="${itemInvoice.getBook().getTitle()}"></td>
+            <td th:text="${itemInvoice.getProduct().getTitle()}"></td>
             <td>
                 <label>
                     <input disabled type="number" min="1"
                            th:value="${itemInvoice.getQuantity()}"
-                           th:attr="data-id=${itemInvoice.getBook().getId()}"
+                           th:attr="data-id=${itemInvoice.getProduct().getId()}"
                            class="form-control quantity">
                 </label>
             </td>
-            <td th:text="${itemInvoice.getBook().getPrice()}"></td>
+            <td th:text="${itemInvoice.getProduct().getPrice()}"></td>
             <td th:text="${itemInvoice.getInvoice().getPrice()}"></td>
         </tr>
         </tbody>
