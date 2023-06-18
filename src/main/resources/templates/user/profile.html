@@ -1,18 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        lang="en">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile</title>
+  <style>
+    .match {
+      border: 1px solid #ced4da;
+      border-radius: .25rem;
+      padding: .375rem .75rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #495057;
+      background-color: palegreen;
+      background-clip: padding-box;
+      transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+    .no-match {
+      border: 1px solid #ced4da;
+      border-radius: .25rem;
+      padding: .375rem .75rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #495057;
+      background-color: orangered;
+      background-clip: padding-box;
+      transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+  </style>
   <th:block th:replace="~{layout::assets-css}"></th:block>
+
 </head>
 <body style="background: #f6f7fc;">
 <th:block th:replace="~{layout::header}"></th:block>
 <th:block th:replace="~{layout::mobile-form}"></th:block>
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Profile</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success" id="save-profile-modal">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="container py-5 h-100">
-  <div class="row justify-content-center align-items-center h-100">
-    <div class="col-12 col-lg-6 col-md-8 col-xl-5">
+  <h1 class="mb-5 text-center">Profile</h1>
+  <div class="row justify-content-center align-items-center">
+    <div class="col-lg-8 col-md-8">
       <div class="card shadow" style="border-radius: 1rem;">
         <div class="card-body p-5 text-center">
           <table class="table table-bordered">
@@ -20,9 +68,10 @@
             <tr>
               <th scope="col">Username</th>
               <th scope="col">Email</th>
-              <th scope="col">PassWord</th>
               <th scope="col">Provider</th>
               <th scope="col">Phone</th>
+              <th scope="col">Role</th>
+              <th scope="col">Action</th>
             </tr>
             </thead>
             <tbody id="profile-user">
@@ -39,24 +88,201 @@
 <th:block th:replace="~{layout::script}"></th:block>
 <script>
   $(document).ready(function () {
-    // get user loging from session
     $.ajax({
-      url: "/api/v1/users/profile",
+      url: "/api/v2/profile-user",
       type: "GET",
       success: function (result) {
         console.log(result);
         var html = '';
         html += '<tr>';
-        html += '<td>' + result.username + '</td>';
+        html += '<td>' + result.userName + '</td>';
         html += '<td>' + result.email + '</td>';
-        html += '<td>' + result.password + '</td>';
-        html += '<td>' + result.provider + '</td>';
+        if (result.provider === undefined) {
+          html += '<td>' + 'local' + '</td>';
+        }
+        else {
+          html += '<td>' + result.provider + '</td>';
+        }
         html += '<td>' + result.phone + '</td>';
+        html += '<td>' + result.roleName + '</td>';
+        html += '<td><a onclick="openEditProfile(\'' + result.userName + '\')" class="btn btn-primary" data-bs-target="#exampleModalCenter" data-bs-toggle="modal">Edit</a></td>';
         html += '</tr>';
         $('#profile-user').html(html);
       }
     });
+    $('#save-profile-modal').click(function () {
+      let phone = $('#phone').val();
+      let provider = $('#provider').val();
+      let id = $('#id').val();
+      let userName = $('#userName').val();
+      let email = $('#email').val();
+      $.ajax({
+        url: "/api/v2/users/" + id,
+        type: "PUT",
+        data: JSON.stringify({
+          "username": userName,
+          "email": email,
+          "phone": phone,
+          "provider": provider
+        }),
+        contentType: "application/json",
+        success: function (result) {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Your profile has been saved',
+                showConfirmButton: false,
+                timer: 3000
+            })
+            $('#exampleModalCenter').modal('hide');
+            setTimeout(function () {
+                location.reload();
+            }, 1500);
+        }
+      });
+
+
+    });
   });
 </script>
+<script>
+  function openEditProfile(userName) {
+    $.ajax({
+      url: "/api/v2/users/" + userName,
+      type: "GET",
+      success: function (result) {
+        var html = '';
+        html += '<input type="hidden" id="id" value="' + result.id + '">';
+        html += '<div class="form-group">';
+        html += '<label for="userName">Username</label>';
+        html += '<input type="text" class="form-control" id="userName" value="' + result.userName + '" >';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label for="email">Email</label>';
+        html += '<input type="text" class="form-control" id="email" value="' + result.email + '" >';
+        html += '</div>';
+        html += '<div class="form-group pt-2">';
+        html += '<button onclick="openChangePassword()" class="btn btn-primary">Change Password</button>';
+        html += '</div>';
+        html += '<div class="form-group passwordOld" style="display: none">';
+        html += '<label for="passwordOld">Password Old</label>';
+        html += '<input type="password" class="form-control" id="passwordOld" required oninput="checkPasswordOld(' + result.id + ')" placeholder="Password Old" >';
+        html += '<span id="passwordMatchOld" class="text-danger"></span>'
+        html += '</div>';
+        html += '<div class="passwordNew" style="display: none">';
+        html += '<label for="passwordNew">Password New</label>';
+        html += '<input type="password" class="form-control" id="passwordNew" required oninput="checkPasswordNew()" placeholder="Password New" >';
+        html += '<span id="passwordMatchNew" class="text-danger"></span>'
+        html += '</div>';
+        html += '<div class="passwordConfirm" style="display: none">';
+        html += '<label for="passwordConfirm">Password Confirm</label>';
+        html += '<input type="password" class="form-control" id="passwordConfirm" required oninput="checkPasswordMatch()" placeholder="Password Confirm" >';
+        html += '<span id="passwordMatchConfirm" class="text-danger"></span>'
+        html += '</div>';
+        html += '<div class="pt-2 savePassword" style="display: none">';
+        html += '<button onclick="savePassword(' + result.id + ')" class="btn btn-info" id="save-password">Save Password</button>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label for="phone">Phone</label>';
+        html += '<input type="text" class="form-control" id="phone" value="' + result.phone + '">';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label for="provider">Provider</label>';
+        if (result.provider == undefined) {
+          result.provider = "";
+        }
+        if (result.provider == "") {
+          html += '<input type="text" class="form-control" id="provider" value="' + result.provider + '">';
+        } else {
+          html += '<input type="text" class="form-control" id="provider" value="' + result.provider + '" disabled>';
+        }
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label for="roleName">Role</label>';
+        html += '<input type="text" class="form-control" id="roleName" value="' + result.roleName + '" disabled>';
+        html += '</div>';
+        $('#exampleModalCenter .modal-body').html(html);
+      }
+    });
+  }
+    function openChangePassword() {
+        $('.passwordOld').toggle();
+    }
+    function savePassword(id) {
+        let passwordNew = $('#passwordNew').val();
+        let passwordConfirm = $('#passwordConfirm').val();
+        let passwordOld = $('#passwordOld').val();
+        if (passwordNew === passwordConfirm && passwordNew !== "" && passwordConfirm !== "" && passwordNew !== passwordOld) {
+            $.ajax({
+                url: "/api/v2/users/password/" + id,
+                type: "PUT",
+                data: JSON.stringify({
+                    "password": passwordNew
+                }),
+                contentType: "application/json",
+                success: function (result) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Your password has been saved',
+                        showConfirmButton: false,
+                        timer: 3000
+                    })
+                    $('.passwordNew').toggle();
+                    $('.passwordConfirm').toggle();
+                    $('.savePassword').toggle();
+                    $('.passwordOld').toggle();
+                }
+            });
+        } else {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Password Confirm not match or Password New Like Password Old',
+                showConfirmButton: false,
+                timer: 3000
+            })
+        }
+    }
+    function checkPasswordOld(id) {
+        let passwordOld = $('#passwordOld').val();
+        console.log(passwordOld);
+        $.ajax({
+            url: "/api/v2/users/" + passwordOld + "/" + id,
+            type: "GET",
+            success: function (result) {
+              console.log(result);
+                if (result === true) {
+                    $('#passwordMatchOld').html('');
+                    $('.passwordNew').toggle();
+                    $('.passwordConfirm').toggle();
+                    $('.savePassword').toggle();
+                } else {
+                    $('#passwordMatchOld').html('Password Old Not Match');
+                }
+            }
+        });
+    }
+    function checkPasswordNew() {
+        let passwordNew = $('#passwordNew').val();
+        let passwordOld = $('#passwordOld').val();
+        if (passwordNew === passwordOld) {
+          $('#passwordMatchNew').html('Password New Like Password Old');
+        } else {
+          $('#passwordMatchNew').html('');
+        }
+    }
+  function checkPasswordMatch() {
+    let passwordNew = $('#passwordNew').val();
+    let passwordConfirm = $('#passwordConfirm').val();
+    if (passwordNew !== passwordConfirm) {
+      $('#passwordMatchConfirm').html('Password Confirm Not Match');
+    } else {
+      $('#passwordMatchConfirm').html('');
+    }
+  }
+</script>
+
+
 </body>
 </html>

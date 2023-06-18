@@ -7,6 +7,7 @@ import example.shop.demo.viewmodels.UserPostVm;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,10 +35,46 @@ public class UserApiController {
                 .build());
         return ResponseEntity.ok().build();
     }
-    @GetMapping("/users/{id}")
-    public ResponseEntity<UserGetVm> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id)
+    @GetMapping("/profile-user")
+    public ResponseEntity<UserGetVm> getUserById(Authentication authentication) {
+        var username = authentication.getName();
+        return ResponseEntity.ok(userService.findByUsername(username)
                 .map(UserGetVm::from)
                 .orElse(null));
+    }
+    @GetMapping("/users/{username}")
+    public ResponseEntity<UserGetVm> getUserByUsername(@PathVariable String username) {
+        return ResponseEntity.ok(userService.findByUsername(username)
+                .map(UserGetVm::from)
+                .orElse(null));
+    }
+    @PutMapping("/users/{id}")
+    public ResponseEntity<Void> updateUser(@PathVariable Long id, @RequestBody @NotNull User user) {
+        user.setId(id);
+        var password = userService.loadUserByUsername(user.getUsername()).getPassword();
+        userService.saveApi(User.builder()
+                .id(id)
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .provider(user.getProvider())
+                .password(password)
+                .build());
+        return ResponseEntity.ok().build();
+    }
+    @PutMapping("/users/password/{id}")
+    public ResponseEntity<Void> updateUserPassword(@PathVariable Long id, @RequestBody @NotNull User user) {
+        user.setId(id);
+        String hashedPassword = userService.hashPassword(user.getPassword());
+        userService.savePasswordApi(User.builder()
+                .id(id)
+                .password(hashedPassword)
+                .build());
+        return ResponseEntity.ok().build();
+    }
+    @GetMapping("/users/{password}/{id}")
+    public ResponseEntity<Boolean> checkPassword(@PathVariable String password, @PathVariable Long id) {
+        boolean check = userService.checkPassword(password, id);
+        return ResponseEntity.ok(userService.checkPassword(password, id));
     }
 }

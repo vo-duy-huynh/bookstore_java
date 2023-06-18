@@ -8,7 +8,9 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @RequestMapping("/")
 @RequiredArgsConstructor
@@ -52,9 +55,10 @@ public class UserController {
         return "redirect:/login";
     }
     @GetMapping("/profile-user")
-    public String profileUser(HttpSession session, Model model){
-        var user = (UserDTO) session.getAttribute("user");
-
+    public String profileUser(Authentication authentication, Model model){
+        var username = authentication.getName();
+        var user = userService.findByUsername(username);
+        model.addAttribute("user", user);
         return "user/profile";
     }
     @GetMapping("/admin/users")

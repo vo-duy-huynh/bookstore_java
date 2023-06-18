@@ -9,6 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shop Pro</title>
   <th:block th:replace="~{LayoutAdmin :: admin-css}"></th:block>
+  <link href="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.css" rel="stylesheet"/>
   <style>
     .table td {
       text-align: center;
@@ -47,8 +48,22 @@
       <div class="col-md-12">
         <nav class="navbar navbar-light">
         </nav>
+        <table id="tblData" class="table table-bordered table-striped" style="width:100%">
+          <thead>
+          <tr>
+            <th>Id</th>
+            <th>UserName</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Provider</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+        </table>
       </div>
     </div>
+
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -59,122 +74,101 @@
             </button>
           </div>
           <div class="modal-body">
-            <form action="/users/edit" method="post" id="edit-user">
-              <input type="hidden" name="editId" id="editId">
-              <label class="form-label">UserName</label>
-              <input type="text" class="form-control" name="userName" id="userName">
-              <label class="form-label">Email</label>
-              <input type="text" class="form-control" name="email" id="email">
-              <label class="form-label">Phone</label>
-              <input type="text" class="form-control" name="phone" id="phone">
-              <input type="submit" class="btn btn-success" value="Save" />
-            </form>
+
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-success" id="save-user-modal">Save</button>
           </div>
         </div>
       </div>
     </div>
-    <table class="table">
-      <thead>
-      <tr>
-        <th>UserName</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Role</th>
-        <th>Action</th>
-      </tr>
-      </thead>
-      <tbody id="user-table-body">
-      </tbody>
-    </table>
   </section>
 
 </main><!-- End #main -->
 <th:block th:replace="LayoutAdmin :: scripts"></th:block>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-<!--  load page and get users-->
-    loadUserList();
-    function editUser(id) {
-        $.ajax({
-            type: 'GET',
-            url: 'http://localhost:8080/api/v2/users/' + id,
+<!--<script>-->
+<!--&lt;!&ndash;  load page and get users&ndash;&gt;-->
+<!--    loadUserList();-->
+<!--    function editUser(id) {-->
+<!--        $.ajax({-->
+<!--            type: 'GET',-->
+<!--            url: 'http://localhost:8080/api/v2/users/' + id,-->
 
-            dataType: 'json',
+<!--            dataType: 'json',-->
 
-            success: function(response) {
-            $('#editId').val(response.id);
-            $('#userName').val(response.userName);
-            $('#email').val(response.email);
-            $('#phone').val(response.phone);
-            $('#exampleModalCenter').modal('show');
-              document.getElementById("save-user-modal").setAttribute("onclick", "userEdit()");
-            }
-        });
-    }
-    function userEdit() {
-        let id = $('#editId').val();
-        let userName = $('#userName').val();
-        let email = $('#email').val();
-        let phone = $('#phone').val();
-        let user = {
-            id: id,
-            userName: userName,
-            email: email,
-            phone: phone
-        };
-        $.ajax({
-            type: 'PUT',
-            url: 'http://localhost:8080/api/v2/users/' + id,
-            contentType: 'application/json',
-            data: JSON.stringify(user),
-            dataType: 'json',
-            success: function(response) {
-                $('#exampleModalCenter').modal('hide');
-                toastr.success('Edit user api success!');
-                loadUserList();
-            },
-            error: function (response) {
-                toastr.error('Edit user api error!');
-            }
-        });
-    }
-    function loadUserList(){
-      $(document).ready(function () {
-        $.ajax({
-          type: 'GET',
-          url: 'http://localhost:8080/api/v2/users',
+<!--            success: function(response) {-->
+<!--            $('#editId').val(response.id);-->
+<!--            $('#userName').val(response.userName);-->
+<!--            $('#email').val(response.email);-->
+<!--            $('#phone').val(response.phone);-->
+<!--            $('#exampleModalCenter').modal('show');-->
+<!--              document.getElementById("save-user-modal").setAttribute("onclick", "userEdit()");-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+<!--    function userEdit() {-->
+<!--        let id = $('#editId').val();-->
+<!--        let userName = $('#userName').val();-->
+<!--        let email = $('#email').val();-->
+<!--        let phone = $('#phone').val();-->
+<!--        let user = {-->
+<!--            id: id,-->
+<!--            userName: userName,-->
+<!--            email: email,-->
+<!--            phone: phone-->
+<!--        };-->
+<!--        $.ajax({-->
+<!--            type: 'PUT',-->
+<!--            url: 'http://localhost:8080/api/v2/users/' + id,-->
+<!--            contentType: 'application/json',-->
+<!--            data: JSON.stringify(user),-->
+<!--            dataType: 'json',-->
+<!--            success: function(response) {-->
+<!--                $('#exampleModalCenter').modal('hide');-->
+<!--                toastr.success('Edit user api success!');-->
+<!--                loadUserList();-->
+<!--            },-->
+<!--            error: function (response) {-->
+<!--                toastr.error('Edit user api error!');-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+<!--    function loadUserList(){-->
+<!--      $(document).ready(function () {-->
+<!--        $.ajax({-->
+<!--          type: 'GET',-->
+<!--          url: 'http://localhost:8080/api/v2/users',-->
 
-          dataType: 'json',
+<!--          dataType: 'json',-->
 
-          success: function(response) {
-            let html = '';
-            response.forEach(function (user) {
-              html += '<tr>';
-              html += '<td>' + user.userName + '</td>';
-              html += '<td>' + user.email + '</td>';
-              html += '<td>' + user.phone + '</td>';
-              html += '<td>' + user.roleName + '</td>';
-              if (user.roleName === 'ADMIN') {
-                html += '<td><button class="btn btn-danger" disabled>Edit</button></td>';
-              } else {
-                html += '<td><button class="btn btn-danger" onclick="editUser(' + user.id + ')">Edit</button></td>';
-              }
-              html += '</tr>';
-            });
-            $('#user-table-body').html(html);
-          }
-        });
+<!--          success: function(response) {-->
+<!--            let html = '';-->
+<!--            response.forEach(function (user) {-->
+<!--              html += '<tr>';-->
+<!--              html += '<td>' + user.userName + '</td>';-->
+<!--              html += '<td>' + user.email + '</td>';-->
+<!--              html += '<td>' + user.phone + '</td>';-->
+<!--              html += '<td>' + user.roleName + '</td>';-->
+<!--              if (user.roleName === 'ADMIN') {-->
+<!--                html += '<td><button class="btn btn-danger" disabled>Edit</button></td>';-->
+<!--              } else {-->
+<!--                html += '<td><button class="btn btn-danger" onclick="editUser(' + user.id + ')">Edit</button></td>';-->
+<!--              }-->
+<!--              html += '</tr>';-->
+<!--            });-->
+<!--            $('#user-table-body').html(html);-->
+<!--          }-->
+<!--        });-->
 
-      });
-    }
-  $('#exampleModalCenter').on('hidden.bs.modal', function () {
-    document.getElementById("add-category").style.display = "none";
-    document.getElementById("edit-category").style.display = "none";
-  });
-</script>
+<!--      });-->
+<!--    }-->
+<!--  $('#exampleModalCenter').on('hidden.bs.modal', function () {-->
+<!--    document.getElementById("add-category").style.display = "none";-->
+<!--    document.getElementById("edit-category").style.display = "none";-->
+<!--  });-->
+<!--</script>-->
+<script src="https://cdn.datatables.net/v/dt/dt-1.13.4/datatables.min.js"></script>
+<script src="/js/userDT.js"></script>
 </body>
 </html>

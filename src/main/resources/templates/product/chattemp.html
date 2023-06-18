@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Chat</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div id="messageContainer"></div>
+<form id="messageForm">
+  <input type="text" id="messageInput" />
+  <button type="submit">Send</button>
+</form>
+</body>
+<script>
+  var socket = new WebSocket('ws://localhost:8080/websocket');
+
+  socket.onopen = function () {
+    console.log('Connected to the server');
+  };
+
+  socket.onmessage = function (event) {
+    var message = event.data;
+    showMessage(message);
+  };
+
+  function sendMessage() {
+    var messageInput = document.getElementById('messageInput');
+    var message = messageInput.value;
+    socket.send(message);
+    messageInput.value = '';
+  }
+
+  function showMessage(message) {
+    var messageContainer = document.getElementById('messageContainer');
+    var p = document.createElement('p');
+    p.textContent = message;
+    messageContainer.appendChild(p);
+  }
+
+  document.getElementById('messageForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    sendMessage();
+  });
+</script>
+</html>

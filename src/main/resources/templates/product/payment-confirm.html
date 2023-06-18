@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaymentConfirm</title>
+    <th:block th:replace="~{layout::assets-css}"></th:block>
+    <style>
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .table th {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .table {
+            margin-top: 20px;
+        }
+
+
+    </style>
+</head>
+<body>
+<th:block th:replace="~{layout::header}"></th:block>
+<th:block th:replace="~{layout::mobile-form}"></th:block>
+<div class="container pt-6" >
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header text-uppercase">
+                    <h3>Payment Confirm</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table">
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <td th:text="${customer.getUsername()}"></td>
+                                </tr>
+                                <tr>
+                                    <th>Customer Phone</th>
+                                    <td th:text="${customer.getPhone()}"></td>
+                                </tr>
+                                <tr>
+                                    <th>Customer Email</th>
+                                    <td th:text="${customer.getEmail()}"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table">
+                                <tr>
+                                    <th>Status</th>
+                                    <td th:text="${transaction.getStatus()}"></td>
+                                </tr>
+                                <tr>
+                                    <th>Bank Code</th>
+                                    <td th:text="${transaction.getBankCode()}"></td>
+                                </tr>
+                                <tr>
+                                    <th>Total Amount</th>
+                                    <td class="price" th:text="${transaction.getAmount()}"></td>
+                                </tr>
+                                <tr>
+                                    <th>Order Description</th>
+                                    <td th:text="${transaction.getOrderDescription()}"></td>
+                                </tr>
+                                <tr>
+                                    <th>Order Date</th>
+                                    <td id="dateDisplay" th:text="${transaction.getCreateDate()}"></td>
+                                </tr>
+                                <tr>
+                                    <th>Order Type</th>
+                                    <td th:text="${transaction.getOrderType()}"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <a class="btn btn-pink" th:href="@{/shop}">Continue Shopping</a>
+                            <a class="btn btn-pink" th:href="@{/}">Go To Home</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{layout::footer}"></th:block>
+<th:block th:replace="~{layout::action-after-footer}"></th:block>
+<th:block th:replace="~{layout::script}"></th:block>
+<script th:src="@{/js/cart.js}"></script>
+<script>
+    function formatPrice(price) {
+        var formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+        return formattedPrice;
+    }
+</script>
+<script>
+    let dateString = document.getElementById("dateDisplay").textContent;
+    const year = dateString.substr(0, 4);
+    const month = dateString.substr(4, 2) - 1;
+    const day = dateString.substr(6, 2);
+    const hours = dateString.substr(8, 2);
+    const minutes = dateString.substr(10, 2);
+    const seconds = dateString.substr(12, 2);
+
+    const date = new Date(year, month, day, hours, minutes, seconds);
+    window.onload = function() {
+        const formattedDate = formatDate(date);
+        document.getElementById("dateDisplay").textContent = formattedDate;
+    };
+    function formatDate(date) {
+        const options = {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+        };
+
+        return date.toLocaleString("en-US", options);
+    }
+</script>
+</body>
+</html>

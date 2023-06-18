@@ -24,10 +24,9 @@
     <link rel="stylesheet" th:href="@{/assets/css/plugins/venobox.min.css}">
     <link rel="stylesheet" th:href="@{/assets/css/plugins/jquery.lineProgressbar.css}">
     <link rel="stylesheet" th:href="@{/assets/css/plugins/aos.min.css}">
-
     <!-- Main CSS -->
     <link rel="stylesheet" th:href="@{/assets/css/style.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+
   </th:block>
 
 </head>
@@ -111,7 +110,9 @@
                   <li>
                     <a href="#">Contact Us</a>
                   </li>
-
+                  <li>
+                    <a th:href="@{/chat}">Chat</a>
+                  </li>
                 </ul>
               </nav>
             </div>
@@ -839,7 +840,7 @@
   <!-- Use the minified version files listed below for better performance and remove the files listed above -->
   <!-- <script th:src="@{assets/js/vendor/vendor.min.js"></script>
   <script th:src="@{assets/js/plugins/plugins.min.js"></script> -->
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- Main JS -->
   <script th:src="@{/assets/js/main.js}"></script>
   <script th:inline="javascript">

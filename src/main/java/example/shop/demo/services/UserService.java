@@ -39,11 +39,16 @@ public class UserService implements UserDetailsService {
     }
     public void saveApi(@NotNull User user) {
         User user1 = userRepository.findById(user.getId()).orElse(null);
-        user.setRoles(user1.getRoles());
-        user.setPassword(user1.getPassword());
-        user.setProvider(user1.getProvider());
-        user.setInvoices(user1.getInvoices());
-        userRepository.save(user);
+        user1.setProvider(user.getProvider());
+        user1.setEmail(user.getEmail());
+        user1.setPhone(user.getPhone());
+        user1.setUsername(user.getUsername());
+        userRepository.save(user1);
+    }
+    public void savePasswordApi(@NotNull User user) {
+        User user1 = userRepository.findById(user.getId()).orElse(null);
+        user1.setPassword(user.getPassword());
+        userRepository.save(user1);
     }
     public void setDefaultRole(String username) {
         userRepository.findByUsername(username).ifPresentOrElse(
@@ -77,7 +82,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public void saveOauthUser(String email, @NotNull String username) {
+    public void saveOauthUser(String email, @NotNull String username, String clientName) {
         if (userRepository.findByUsername(username).isPresent())
             return;
 
@@ -85,7 +90,12 @@ public class UserService implements UserDetailsService {
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(new BCryptPasswordEncoder().encode(username));
-        user.setProvider(Provider.GOOGLE.value);
+        if (clientName.toUpperCase().equals(Provider.GOOGLE.value.toUpperCase()))
+            user.setProvider(Provider.GOOGLE.value);
+        else
+        {
+            user.setProvider(Provider.GITHUB.value);
+        }
         user.getRoles().add(roleRepository.findRoleById(Role.USER.value));
         userRepository.save(user);
     }
@@ -118,5 +128,20 @@ public class UserService implements UserDetailsService {
     @PreAuthorize("hasAnyAuthority('USER') or hasAnyAuthority('ADMIN')")
     public Optional<User> getUserById(Long userId) {
         return userRepository.findById(userId);
+    }
+
+    public String hashPassword(String password) {
+        return new BCryptPasswordEncoder().encode(password);
+    }
+
+    public Boolean checkPassword(String password, Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return new BCryptPasswordEncoder().matches(password, user.getPassword());
+    }
+    public User getUserByUserName(String username) {
+        return userRepository.findUserByUsername(username);
     }
 }

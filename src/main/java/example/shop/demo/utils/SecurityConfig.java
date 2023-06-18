@@ -3,6 +3,7 @@ package example.shop.demo.utils;
 import example.shop.demo.services.OAuthService;
 import example.shop.demo.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +26,6 @@ public class SecurityConfig{
     private final OAuthService oAuthService;
 
     private final UserService userService;
-
     @Bean
     public UserDetailsService userDetailsService() {
         return new UserService();
@@ -47,13 +48,15 @@ public class SecurityConfig{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**","/assets/", "/", "/oauth/**", "/register", "/error", "/products/set-view-image/**", "/products/delete-image/**", "/assets/css/vendor", "/products/add/**", "/products/search/**", "/products/add-to-cart", "/login", "/profile-user")
+                        .requestMatchers("/css/**", "/js/**", "/js","/assets/**","/assetsAdmin/**", "/", "/oauth/**", "/register", "/error", "/products/set-view-image/**", "/products/delete-image/**", "/assets/css/vendor", "/products/add/**", "/products/search/**", "/products/add-to-cart", "/login","/auth/**", "/oauth2/**", "/login/**", "/profile-user","/chat","/chat/**", "/chat.sendMessage", "/chat.addUser", "/topic/public", "/chattemp"
+                        , "/topic/public", "/app/**", "/ws/**", "/ws"
+                        )
                         .permitAll()
-                        .requestMatchers("/products/edit/**", "/products/add/**", "/products/delete")
+                        .requestMatchers("/products/edit/**", "/products/add/**", "/products/delete", "/admin/**")
                         .hasAnyAuthority("ADMIN")
-                        .requestMatchers("/products", "/cart", "/cart/**", "/categories/**", "/products/**", "/profile-user")
+                        .requestMatchers("/products","/shop", "/cart", "/cart/**", "/categories/**", "/products/**", "/profile-user", "/shop")
                         .hasAnyAuthority("ADMIN", "USER")
-                        .requestMatchers("/api/**, /api/categories/**, /api/v2/**")
+                        .requestMatchers("/api/**", "/api/categories/**", "/api/v2/**", "**/api/v3/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 ).logout(logout ->
@@ -93,7 +96,14 @@ public class SecurityConfig{
                                 .successHandler(
                                         (request, response, authentication) -> {
                                             var oidcUser = (DefaultOidcUser) authentication.getPrincipal();
-                                            userService.saveOauthUser(oidcUser.getEmail(), oidcUser.getName());
+                                            String clientName = oidcUser.getAuthorities().toString();
+                                            var iss = oidcUser.getAttributes().get("iss").toString();
+                                            if (iss.contains("google")) {
+                                                clientName = "Google";
+                                            } else {
+                                                clientName = "Github";
+                                            }
+                                            userService.saveOauthUser(oidcUser.getEmail(), oidcUser.getName(), clientName);
                                             response.sendRedirect("/");
                                         }
                                 )

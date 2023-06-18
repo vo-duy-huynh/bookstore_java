@@ -1,52 +1,5 @@
 @charset "UTF-8";
 
-
------------------------------------------------------------------------------------
-
-    CSS INDEX
-    ===================
-
-    -> Base - Default
-
-    -> Components - Button
-    -> Components - Hero
-    -> Components - Service Promo
-    -> Components - Banner
-    -> Components - Product
-    -> Components - Blog Feed
-    -> Components - Instagram
-    -> Components - Company Logo
-    -> Components - Slider Customize
-    -> Components - Tab Style
-    -> Components - Form
-    -> Components - Sidebar Widget
-    -> Components - Breadcrumb
-    -> Components - Pagination
-    -> Components - Comment
-    -> Components - Table
-
-    -> Pages - Shop
-    -> Pages - Product Details
-    -> Pages - Cart
-    -> Pages - Compare
-    -> Pages - Checkout
-    -> Pages - Login
-    -> Pages - My Account
-    -> Pages - FAQ
-    -> Pages - Privacy Policy
-    -> Pages - 404 
-    -> Pages - About
-    -> Pages - Contact
-    -> Pages - Blog
-    -> Pages - Empty Cart
-
-    -> Layout - Header
-    -> Layout - Header Mobile
-    -> Layout - Footer
-    -> Layout - Offcanvas
-    -> Layout - Modal
-
-
 -----------------------------------------------------------------------------------*/
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&amp;display=swap");
 /*!
@@ -609,8 +562,8 @@ progress {
     height: 200px;
 }
 .img-fluid-2 {
-    width: 330px;
-    height: 330px;
+    width: 260px;
+    height: 260px;
 }
 .img-fluid-modal{
     width: 90px;
@@ -4715,18 +4668,65 @@ progress {
 
 .pagination {
     display: flex;
-    padding-left: 0;
     list-style: none;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
 }
 
-.page-link {
-    position: relative;
+.pagination li {
+    margin: 0 5px;
+}
+.pagination li.active-page {
+    color: red;
+}
+.pagination li.active-page a {
+    color: white;
+    background-color: red;
+}
+.pagination li a {
     display: block;
-    color: #0D6EFD;
+    padding: 5px 10px;
+    background-color: #eee;
+    color: #333;
     text-decoration: none;
-    background-color: #FFF;
-    border: 1px solid #DEE2E6;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    border-radius: 5px;
+}
+
+.pagination li a:hover {
+    background-color: #333;
+    color: #fff;
+}
+.pagination1 {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+}
+
+.pagination1 li {
+    margin: 0 5px;
+}
+.pagination1 li.active-page1 {
+    color: red;
+}
+.pagination1 li.active-page1 a {
+    color: white;
+    background-color: red;
+}
+.pagination1 li a {
+    display: block;
+    padding: 5px 10px;
+    background-color: #eee;
+    color: #333;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.pagination1 li a:hover {
+    background-color: #333;
+    color: #fff;
 }
 @media (prefers-reduced-motion: reduce) {
     .page-link {

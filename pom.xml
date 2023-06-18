@@ -8,11 +8,11 @@
 		<version>3.1.0</version>
 		<relativePath/>
 	</parent>
-	<groupId>fit.hutech</groupId>
-	<artifactId>spring</artifactId>
+	<groupId>example.shop</groupId>
+	<artifactId>shoppro</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring</name>
-	<description>Thực hành lập trình ứng dụng với Java</description>
+	<description>shoppro</description>
 	<properties>
 		<java.version>20</java.version>
 	</properties>
@@ -29,6 +29,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-jose</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

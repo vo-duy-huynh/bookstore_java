@@ -5,7 +5,7 @@ import example.shop.demo.entities.User;
 import lombok.Builder;
 
 @Builder
-public record UserGetVm(Long id, String userName, String email, String password, String phone, String roleName) {
+public record UserGetVm(Long id, String userName, String email, String password,String provider, String phone, String roleName) {
     public static UserGetVm from(User user) {
         String roleName = user.getRoles().stream()
                 .findFirst()
@@ -17,6 +17,7 @@ public record UserGetVm(Long id, String userName, String email, String password,
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getProvider(),
                 user.getPhone(),
                 roleName
         );

@@ -55,7 +55,7 @@
                 </label>
             </td>
             <td class="price" th:text="${item.getPrice()}"></td>
-            <td class="price" th:text="${item.getPrice() * item.getQuantity()}"></td>
+            <td class="price" id="totalPrice" th:text="${item.getPrice() * item.getQuantity()}"></td>
             <td>
                 <a class="btn btn-pink"
                    th:href="@{/cart/removeFromCart/{id}(id=${item.getProductId()})}">
@@ -71,6 +71,7 @@
         </div>
         <div class="col-md-12 text-center">
             <a class="btn btn-success" th:href="@{/cart/checkout}">Checkout</a>
+            <a class="btn btn-success" onclick="checkOutVNPay()">Checkout VNPay</a>
             <a class="btn btn-pink" th:href="@{/cart/clearCart}">Clear Cart</a>
         </div>
     </div>
@@ -81,7 +82,7 @@
             <div class="col-md-6 offset-md-3 text-center">
                 <h3 class="mt-5">Your cart is empty</h3>
                 <p class="lead">Please add some products to your cart</p>
-                <a class="btn btn-primary" href="/products">Go to list product</a>
+                <a class="btn btn-primary" href="/shop">Go to list product</a>
             </div>
         </div>
     </div>
@@ -95,6 +96,29 @@
         var formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
         return formattedPrice;
     }
+    function checkOutVNPay() {
+        let amount = document.getElementById("totalPrice").innerText;
+        console.log(amount);
+        amount = amount.replace(/\./g, '');
+        amount = amount.replace(/\đ/g, '');
+        console.log(amount);
+        $.ajax({
+            url: 'http://localhost:8080/api/v3/create-payment/' + amount,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'Ok') {
+                    window.location.href = response.url;
+                } else {
+                    // Handle error or display appropriate message
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle error or display appropriate message
+            }
+        });
+    }
+
 </script>
 </body>
 </html>
