@@ -48,13 +48,13 @@ public class SecurityConfig{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/js","/assets/**","/assetsAdmin/**", "/", "/oauth/**", "/register", "/error", "/products/set-view-image/**", "/products/delete-image/**", "/assets/css/vendor", "/products/add/**", "/products/search/**", "/products/add-to-cart", "/login","/auth/**", "/oauth2/**", "/login/**", "/profile-user","/chat","/chat/**", "/chat.sendMessage", "/chat.addUser", "/topic/public", "/chattemp"
-                        , "/topic/public", "/app/**", "/ws/**", "/ws"
+                        .requestMatchers("/css/**", "/js/**", "/js","/assets/**","/assetsAdmin/**", "/", "/oauth/**", "/register", "/error", "/products/set-view-image/**", "/products/delete-image/**", "/assets/css/vendor", "/products/add/**", "/products/search/**","/products/**", "/products/add-to-cart", "/login","/auth/**", "/oauth2/**", "/login/**", "/profile-user","/chat","/chat/**", "/chat.sendMessage", "/chat.addUser", "/topic/public"
+                        , "/topic/public", "/app/**", "/ws/**", "/ws", "/shop", "/shop/**"
                         )
                         .permitAll()
                         .requestMatchers("/products/edit/**", "/products/add/**", "/products/delete", "/admin/**")
                         .hasAnyAuthority("ADMIN")
-                        .requestMatchers("/products","/shop", "/cart", "/cart/**", "/categories/**", "/products/**", "/profile-user", "/shop")
+                        .requestMatchers("/products","/shop", "/cart", "/cart/**", "/categories/**", "/products/**", "/profile-user", "/shop", "/shop/**")
                         .hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers("/api/**", "/api/categories/**", "/api/v2/**", "**/api/v3/**")
                         .permitAll()
@@ -98,12 +98,13 @@ public class SecurityConfig{
                                             var oidcUser = (DefaultOidcUser) authentication.getPrincipal();
                                             String clientName = oidcUser.getAuthorities().toString();
                                             var iss = oidcUser.getAttributes().get("iss").toString();
+                                            var name = oidcUser.getAttributes().get("given_name").toString();
                                             if (iss.contains("google")) {
                                                 clientName = "Google";
                                             } else {
                                                 clientName = "Github";
                                             }
-                                            userService.saveOauthUser(oidcUser.getEmail(), oidcUser.getName(), clientName);
+                                            userService.saveOauthUser(oidcUser.getEmail(), name, clientName);
                                             response.sendRedirect("/");
                                         }
                                 )

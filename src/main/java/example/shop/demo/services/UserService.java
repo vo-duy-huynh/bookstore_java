@@ -89,6 +89,7 @@ public class UserService implements UserDetailsService {
         var user = new User();
         user.setUsername(username);
         user.setEmail(email);
+        user.setPhone("0123456789");
         user.setPassword(new BCryptPasswordEncoder().encode(username));
         if (clientName.toUpperCase().equals(Provider.GOOGLE.value.toUpperCase()))
             user.setProvider(Provider.GOOGLE.value);
